@@ -14,7 +14,7 @@ class LambdaCronStack(Stack):
             handler_code = fp.read()
 
         lambdaFn = lambda_.Function(
-            self, "Singleton",
+            self, "rss-lambda",
             code=lambda_.InlineCode(handler_code),
             handler="index.main",
             timeout=Duration.seconds(300),
