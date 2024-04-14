@@ -26,10 +26,10 @@ class LambdaCronStack(Stack):
         rule = events.Rule(
             self, "Rule",
             schedule=events.Schedule.cron(
-                minute='0',
-                hour='18',
+                minute='*/5',
+                hour='*',
                 month='*',
-                week_day='MON-FRI',
+                week_day='*',
                 year='*'),
         )
         rule.add_target(targets.LambdaFunction(lambdaFn))
