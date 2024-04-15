@@ -19,8 +19,8 @@ jobs:
           node-version: 18
           cache: "npm"
 
-      - name: Install AWS CDK
-        run: npm i -g aws-cdk
+      - name: Install AWS CDK and experimentaly Python lambda package
+        run: npm i -g aws-cdk @aws-cdk/aws-lambda-python-alpha
 
       - name: Setup Python environment
         uses: actions/setup-python@v5
