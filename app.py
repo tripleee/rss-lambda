@@ -13,11 +13,11 @@ class LambdaCronStack(Stack):
 
         lambdaFn = py_lambda.PythonFunction(
             self, "rss-lambda",
-            code=aws_lambda.Code.from_asset("rss_lambda.py"),
             entry=".",
+            runtime=aws_lambda.Runtime.PYTHON_3_12,
+            index="rss_lambda.py",
             handler="rss_lambda.main",
             timeout=Duration.seconds(300),
-            runtime=aws_lambda.Runtime.PYTHON_3_12,
         )
 
         # Run every five minutes
