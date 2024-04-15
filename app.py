@@ -1,5 +1,6 @@
 from aws_cdk import (
     aws_events as events,
+    aws_lambda,
     aws_lambda_python_alpha as py_lambda,
     aws_events_targets as targets,
     App, Duration, Stack
@@ -12,7 +13,7 @@ class LambdaCronStack(Stack):
 
         lambdaFn = py_lambda.PythonFunction(
             self, "rss-lambda",
-            code=py_lambda.Code.from_asset("rss_lambda.py"),
+            code=aws_lambda.Code.from_asset("rss_lambda.py"),
             entry=".",
             handler="rss_lambda.main",
             timeout=Duration.seconds(300),
