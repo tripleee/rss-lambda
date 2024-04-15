@@ -1,6 +1,6 @@
 from aws_cdk import (
     aws_events as events,
-    aws_lambda_python as py_lambda,
+    aws_lambda_python_alpha as py_lambda,
     aws_events_targets as targets,
     App, Duration, Stack
 )
