@@ -10,7 +10,7 @@ class LambdaCronStack(Stack):
     def __init__(self, app: App, id: str) -> None:
         super().__init__(app, id)
 
-        lambdaFn = py_lambda.Function(
+        lambdaFn = py_lambda.PythonFunction(
             self, "rss-lambda",
             code=py_lambda.Code.from_asset("rss_lambda.py"),
             entry=".",
