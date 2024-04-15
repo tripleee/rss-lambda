@@ -12,6 +12,9 @@ is a very basic exercise of
 the [`feedparser`](https://pypi.org/project/feedparser/) API.
 The deployment script and infrastructure is built in accordance with
 https://conermurphy.com/blog/automate-aws-cdk-stack-deployment-github-actions
+but in order for that to work, you need to run `cdk bootstrap`
+with significantly broader permissions
+(in the end, I just used my root account after struggling for hours).
 
 I doubt that this will be immediately useful to anybody else,
 but I hope it can be helful as a template for other simple
