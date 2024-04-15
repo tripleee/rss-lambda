@@ -1,6 +1,6 @@
 from aws_cdk import (
     aws_events as events,
-    aws_lambda as lambda_,
+    aws_lambda_python as py_lambda,
     aws_events_targets as targets,
     App, Duration, Stack
 )
@@ -10,15 +10,13 @@ class LambdaCronStack(Stack):
     def __init__(self, app: App, id: str) -> None:
         super().__init__(app, id)
 
-        with open("rss_lambda.py", encoding="utf8") as fp:
-            handler_code = fp.read()
-
-        lambdaFn = lambda_.Function(
+        lambdaFn = py_lambda.Function(
             self, "rss-lambda",
-            code=lambda_.InlineCode(handler_code),
-            handler="index.main",
+            code=py_lambda.Code.from_asset("rss_lambda.py"),
+            entry=".",
+            handler="rss_lambda.main",
             timeout=Duration.seconds(300),
-            runtime=lambda_.Runtime.PYTHON_3_12,
+            runtime=py_lambda.Runtime.PYTHON_3_12,
         )
 
         # Run every day at 6PM UTC
