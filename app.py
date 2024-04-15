@@ -16,7 +16,7 @@ class LambdaCronStack(Stack):
             entry="rss_lambda",
             runtime=aws_lambda.Runtime.PYTHON_3_12,
             index="rss_lambda.py",
-            handler="rss_lambda.rss_lambda..main",
+            handler="main",
             timeout=Duration.seconds(300),
         )
 
