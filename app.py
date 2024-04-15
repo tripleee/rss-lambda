@@ -13,7 +13,7 @@ class LambdaCronStack(Stack):
 
         lambdaFn = py_lambda.PythonFunction(
             self, "rss-lambda",
-            entry=".",
+            entry="rss_lambda",
             runtime=aws_lambda.Runtime.PYTHON_3_12,
             index="rss_lambda.py",
             handler="rss_lambda.main",
