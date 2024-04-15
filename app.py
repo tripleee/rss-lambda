@@ -17,7 +17,7 @@ class LambdaCronStack(Stack):
             entry=".",
             handler="rss_lambda.main",
             timeout=Duration.seconds(300),
-            runtime=py_lambda.Runtime.PYTHON_3_12,
+            runtime=aws_lambda.Runtime.PYTHON_3_12,
         )
 
         # Run every five minutes
