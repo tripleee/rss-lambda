@@ -50,6 +50,9 @@ def main(event, context) -> None:
     new = parse_rss(feedurl)
     for url in new:
         ntfy(url)
+    requests.get(
+        "https://hc-ping.com/49036dcb-6946-478f-8570-d79df6eed9d9",
+        timeout=10)
 
 if __name__ == '__main__':
     main(None, None)
