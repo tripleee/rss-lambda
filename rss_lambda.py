@@ -53,4 +53,3 @@ def main(event, context) -> None:
 
 if __name__ == '__main__':
     main(None, None)
-

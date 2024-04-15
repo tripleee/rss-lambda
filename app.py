@@ -19,7 +19,7 @@ class LambdaCronStack(Stack):
             runtime=py_lambda.Runtime.PYTHON_3_12,
         )
 
-        # Run every day at 6PM UTC
+        # Run every five minutes
         # See https://docs.aws.amazon.com/lambda/latest/dg/tutorial-scheduled-events-schedule-expressions.html
         rule = events.Rule(
             self, "Rule",
