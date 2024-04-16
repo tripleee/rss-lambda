@@ -5,12 +5,12 @@ import requests
 import feedparser
 
 
-DEFAULT_AGE = 3600  # seconds
+DEFAULT_AGE = 300  # seconds
 
 
 def parse_rss(feedurl: str, age: int = DEFAULT_AGE) -> list[str]:
     """
-    Read the RSS feed; return any posts less than an hour old.
+    Read the RSS feed; return any posts less than five minutes old.
     """
     rss = feedparser.parse(feedurl)
     try:
