@@ -35,7 +35,7 @@ class TestParseRss(unittest.TestCase):
         )
 
         # Call the function
-        result = parse_rss('http://example.com/rss')
+        result = parse_rss('http://example.com/rss', 3600)
 
         # Check the result
         self.assertEqual(result, EXPECTED_URLS)
