@@ -12,62 +12,77 @@ logger = logging.getLogger(__name__)
 haz_logging = False
 
 
-def log(*args) -> None:
-    """
-    Wrapper for logging, use print() in AWS
-    """
-    if haz_logging:
-        logger.info(*args)
-    else:
-        print(args[0] % args[1:])
+class RSSNotifier:
+    def __init__(
+            self,
+            name: str,
+            feedurl: str,
+            ntfy_url: str,
+            age: int = DEFAULT_AGE
+    ) -> None:
+        self.name = name
+        self.feedurl = feedurl
+        self.ntfy_url = ntfy_url
+        self.age = age
 
-
-def parse_rss(feedurl: str, age: int = DEFAULT_AGE) -> list[str]:
-    """
-    Read the RSS feed; return any posts less than five minutes old.
-    """
-    rss = feedparser.parse(feedurl)
-    try:
-        updated_time = rss.feed.updated
-    except AttributeError as exc:
-        # This can happen when the network goes down (e.g. when your laptop
-        # sleeps, or your wifi glitches); the feed dictionary is empty, and
-        # the object contains a 'bozo_exception' field with the error
-        if hasattr(rss, 'bozo_exception') and rss.bozo_exception:
-            print("Bozo exception:", rss.bozo_exception)
+    def log(self, *args) -> None:
+        """
+        Wrapper for logging, use print() in AWS
+        """
+        if haz_logging:
+            logger.info(*args)
         else:
-            print("Exception:", type(exc), exc)
-        return []
-    updated = datetime.fromisoformat(updated_time)
-    now = datetime.now(timezone.utc)
-    if (now - updated) > timedelta(seconds=age):
-        log("Feed is too old: %s", updated)
-        return []
+            print(args[0] % args[1:])
 
-    urls: list[str] = []
-    delta = timedelta(seconds=age)
-    double_delta = timedelta(seconds=age*2)
-    within_delta = False
-    for entry in rss.entries:
-        published = datetime.fromisoformat(entry.published)
-        if (now - published) <= delta:
-            urls.append(entry.id)
-            within_delta = True
+    def parse_rss(self) -> list[str]:
+        """
+        Read the RSS feed; return any posts less than five minutes old.
+        """
+        rss = feedparser.parse(self.feedurl)
+        delta = timedelta(seconds=self.age)
+        try:
+            updated_time = rss.feed.updated
+        except AttributeError as exc:
+            # This can happen when the network goes down (e.g. when
+            # your laptop sleeps, or your wifi glitches); the feed
+            # dictionary is empty, and the object contains a
+            # 'bozo_exception' field with the error
+            if hasattr(rss, 'bozo_exception') and rss.bozo_exception:
+                self.log("Bozo exception: %s", rss.bozo_exception)
+            else:
+                self.log("Exception: (%s) %s", type(exc), exc)
+            return []
+        updated = datetime.fromisoformat(updated_time)
+        now = datetime.now(timezone.utc)
+        if (now - updated) > delta:
+            self.log("Feed is too old: %s", updated)
+            return []
+
+        urls: list[str] = []
+        double_delta = timedelta(seconds=self.age*2)
+        within_delta = False
+        for entry in rss.entries:
+            published = datetime.fromisoformat(entry.published)
+            if (now - published) <= delta:
+                urls.append(entry.id)
+                within_delta = True
+            else:
+                within_delta = False
+            if (now - published) > double_delta:
+                break
+            self.log(
+                "URL %s %s", entry.id,
+                "returned" if within_delta else "too old")
+
+        if urls:
+            self.log("Found %d new posts", len(urls))
         else:
-            would_be_within_delta = False
-        if (now - published) > double_delta:
-            break
-        log(
-            "URL %s %s", entry.id, "returned" if within_delta else "too old")
+            self.log(
+                "No new posts; newest post is %s (published %s), total %i",
+                entry.id, published, len(rss.entries))
 
-    if urls:
-        log("Found %d new posts", len(urls))
-    else:
-        log(
-            "No new posts; newest post is %s (published %s), total %i",
-            entry.id, published, len(rss.entries))
+        return urls
 
-    return urls
 
 def ntfy(url: str) -> None:
     headers = {
@@ -76,15 +91,25 @@ def ntfy(url: str) -> None:
     response = requests.post(
         'http://ntfy.sh/procmail_at_SE', headers=headers, data=url)
 
+
 def main(event, context) -> None:
-    feedurl = 'https://stackexchange.com/feeds/tagsets/158819/procmail' \
-        '?sort=newest'
-    new = parse_rss(feedurl)
-    for url in new:
-        ntfy(url)
+    for feed in (RSSNotifier(
+            name='procmail',
+            feedurl='https://stackexchange.com/feeds/tagsets/158819/procmail' \
+                '?sort=newest',
+            ntfy_url='http://ntfy.sh/procmail_at_SE'),
+        RSSNotifier(
+            name='Awk',
+            feedurl='https://stackoverflow.com/feeds/tag?' \
+                'tagnames=awk&sort=newest',
+            ntfy_url='http://ntfy.sh/SO_Awk')
+    ):
+        for url in feed.parse_rss():
+            ntfy(url)
     requests.get(
         "https://hc-ping.com/49036dcb-6946-478f-8570-d79df6eed9d9",
         timeout=10)
+
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)

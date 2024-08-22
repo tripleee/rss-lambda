@@ -2,7 +2,7 @@ import unittest
 from unittest.mock import patch, MagicMock
 from datetime import datetime, timedelta, timezone
 
-from rss_lambda import parse_rss, main as parse_rss_main
+from rss_lambda import RSSNotifier, main as parse_rss_main
 
 
 EXPECTED_URLS = ['http://example.com/1', 'http://example.com/2']
@@ -34,18 +34,19 @@ class TestParseRss(unittest.TestCase):
             ]
         )
 
-        # Call the function
-        result = parse_rss('http://example.com/rss', 3600)
-
-        # Check the result
+        # Call the method
+        notifier = RSSNotifier('test', 'http://example.com/rss', '', 3600)
+        result = notifier.parse_rss()
         self.assertEqual(result, EXPECTED_URLS)
 
         # Check that the mock objects were called correctly
         mock_feedparser.parse.assert_called_once_with('http://example.com/rss')
 
     @patch('rss_lambda.requests.post')
-    @patch('rss_lambda.parse_rss')
+    @patch('rss_lambda.RSSNotifier.parse_rss')
     def test_main(self, mock_parse_rss, mock_requests_post):
+        notifier = RSSNotifier('test', 'http://example.com/rss', '', 3600)
+
         # Set up the mock objects
         mock_parse_rss.return_value = EXPECTED_URLS
         mock_requests_post.return_value = MagicMock(status_code=200)
