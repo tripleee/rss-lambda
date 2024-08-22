@@ -9,6 +9,17 @@ import feedparser
 DEFAULT_AGE = 300  # seconds
 
 logger = logging.getLogger(__name__)
+haz_logging = False
+
+
+def log(*args) -> None:
+    """
+    Wrapper for logging, use print() in AWS
+    """
+    if haz_logging:
+        logger.info(*args)
+    else:
+        print(args[0] % args[1:])
 
 
 def parse_rss(feedurl: str, age: int = DEFAULT_AGE) -> list[str]:
@@ -30,7 +41,7 @@ def parse_rss(feedurl: str, age: int = DEFAULT_AGE) -> list[str]:
     updated = datetime.fromisoformat(updated_time)
     now = datetime.now(timezone.utc)
     if (now - updated) > timedelta(seconds=age):
-        logger.info("Feed is too old: %s", updated)
+        log("Feed is too old: %s", updated)
         return []
 
     urls: list[str] = []
@@ -46,13 +57,13 @@ def parse_rss(feedurl: str, age: int = DEFAULT_AGE) -> list[str]:
             would_be_within_delta = False
         if (now - published) > double_delta:
             break
-        logger.info(
+        log(
             "URL %s %s", entry.id, "returned" if within_delta else "too old")
 
     if urls:
-        logger.info("Found %d new posts", len(urls))
+        log("Found %d new posts", len(urls))
     else:
-        logger.info(
+        log(
             "No new posts; newest post is %s (published %s), total %i",
             entry.id, published, len(rss.entries))
 
@@ -77,4 +88,5 @@ def main(event, context) -> None:
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)
+    haz_logging = True
     main(None, None)
