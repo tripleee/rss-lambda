@@ -93,14 +93,19 @@ def ntfy(url: str) -> None:
 
 
 def main(event, context) -> None:
-    feed = RSSNotifier(
-        name='procmail',
-        feedurl='https://stackexchange.com/feeds/tagsets/158819/procmail' \
-            '?sort=newest',
-        ntfy_url='http://ntfy.sh/procmail_at_SE')
-    new = feed.parse_rss()
-    for url in new:
-        ntfy(url)
+    for feed in (RSSNotifier(
+            name='procmail',
+            feedurl='https://stackexchange.com/feeds/tagsets/158819/procmail' \
+                '?sort=newest',
+            ntfy_url='http://ntfy.sh/procmail_at_SE'),
+        RSSNotifier(
+            name='Awk',
+            feedurl='https://stackoverflow.com/feeds/tag?' \
+                'tagnames=awk&sort=newest',
+            ntfy_url='http://ntfy.sh/SO_Awk')
+    ):
+        for url in feed.parse_rss():
+            ntfy(url)
     requests.get(
         "https://hc-ping.com/49036dcb-6946-478f-8570-d79df6eed9d9",
         timeout=10)
