@@ -30,6 +30,7 @@ def parse_rss(feedurl: str, age: int = DEFAULT_AGE) -> list[str]:
     updated = datetime.fromisoformat(updated_time)
     now = datetime.now(timezone.utc)
     if (now - updated) > timedelta(seconds=age):
+        logger.info("Feed is too old: %s", updated)
         return []
 
     urls: list[str] = []
