@@ -1,11 +1,14 @@
 from __future__ import annotations
 from datetime import datetime, timedelta, timezone
+import logging
 
 import requests
 import feedparser
 
 
 DEFAULT_AGE = 300  # seconds
+
+logger = logging.getLogger(__name__)
 
 
 def parse_rss(feedurl: str, age: int = DEFAULT_AGE) -> list[str]:
@@ -30,11 +33,28 @@ def parse_rss(feedurl: str, age: int = DEFAULT_AGE) -> list[str]:
         return []
 
     urls: list[str] = []
+    delta = timedelta(seconds=age)
+    double_delta = timedelta(seconds=age*2)
+    within_delta = False
     for entry in rss.entries:
         published = datetime.fromisoformat(entry.published)
-        if (now - published) > timedelta(seconds=age):
+        if (now - published) <= delta:
+            urls.append(entry.id)
+            within_delta = True
+        else:
+            would_be_within_delta = False
+        if (now - published) > double_delta:
             break
-        urls.append(entry.id)
+        logger.info(
+            "URL %s %s", entry.id, "returned" if within_delta else "too old")
+
+    if urls:
+        logger.info("Found %d new posts", len(urls))
+    else:
+        logger.info(
+            "No new posts; newest post is %s (published %s), total %i",
+            entry.id, published, len(rss.entries))
+
     return urls
 
 def ntfy(url: str) -> None:
@@ -55,4 +75,5 @@ def main(event, context) -> None:
         timeout=10)
 
 if __name__ == '__main__':
+    logging.basicConfig(level=logging.INFO)
     main(None, None)
