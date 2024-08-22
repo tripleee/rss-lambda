@@ -1,3 +1,5 @@
+import logging
+
 from aws_cdk import (
     aws_events as events,
     aws_lambda,
@@ -34,6 +36,7 @@ class LambdaCronStack(Stack):
         rule.add_target(targets.LambdaFunction(lambdaFn))
 
 
+logging.getLogger().setLevel(logging.INFO)
 app = App()
 LambdaCronStack(app, "LambdaCronExample")
 app.synth()
