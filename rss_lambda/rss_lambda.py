@@ -83,13 +83,16 @@ class RSSNotifier:
 
         return urls
 
+    def ntfy(self, url: str) -> None:
+        headers = {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        }
+        response = requests.post(self.ntfy_url, headers=headers, data=url)
 
-def ntfy(url: str) -> None:
-    headers = {
-        'Content-Type': 'application/x-www-form-urlencoded',
-    }
-    response = requests.post(
-        'http://ntfy.sh/procmail_at_SE', headers=headers, data=url)
+    def ntfy_new(self) -> None:
+        urls = self.parse_rss()
+        for url in urls:
+            self.ntfy(url)
 
 
 def main(event, context) -> None:
@@ -104,8 +107,7 @@ def main(event, context) -> None:
                 'tagnames=awk&sort=newest',
             ntfy_url='http://ntfy.sh/SO_Awk')
     ):
-        for url in feed.parse_rss():
-            ntfy(url)
+        feed.ntfy_new()
     requests.get(
         "https://hc-ping.com/49036dcb-6946-478f-8570-d79df6eed9d9",
         timeout=10)
