@@ -39,7 +39,7 @@ class RSSNotifier:
         Read the RSS feed; return any posts less than five minutes old.
         """
         rss = feedparser.parse(self.feedurl)
-        delta = timedelta(seconds=self.age)
+        delta = timedelta(seconds=30+self.age)
         try:
             updated_time = rss.feed.updated
         except AttributeError as exc:
