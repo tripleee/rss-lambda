@@ -1,6 +1,7 @@
 from __future__ import annotations
 from datetime import datetime, timedelta, timezone
 import logging
+import os
 
 import requests
 import feedparser
@@ -98,19 +99,17 @@ class RSSNotifier:
 def main(event, context) -> None:
     for feed in (RSSNotifier(
             name='procmail',
-            feedurl='https://stackexchange.com/feeds/tagsets/158819/procmail' \
-                '?sort=newest',
-            ntfy_url='http://ntfy.sh/procmail_at_SE'),
+            feedurl='https://stackexchange.com/feeds/tagsets/158819/' \
+                'procmail?sort=newest',
+            ntfy_url=os.environ['NTFY_PROCMAIL_URL']),
         RSSNotifier(
             name='Awk',
             feedurl='https://stackoverflow.com/feeds/tag?' \
                 'tagnames=awk&sort=newest',
-            ntfy_url='http://ntfy.sh/SO_Awk')
+            ntfy_url=os.environ['NTFY_AWK_URL'])
     ):
         feed.ntfy_new()
-    requests.get(
-        "https://hc-ping.com/49036dcb-6946-478f-8570-d79df6eed9d9",
-        timeout=10)
+    requests.get(os.environ['HC_PING_URL'], timeout=10)
 
 
 if __name__ == '__main__':

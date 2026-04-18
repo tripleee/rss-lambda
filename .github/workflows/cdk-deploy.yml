@@ -7,6 +7,10 @@ on:
 jobs:
   aws_cdk:
     runs-on: ubuntu-latest
+    env:
+      NTFY_PROCMAIL_URL: ${{ secrets.NTFY_PROCMAIL_URL }}
+      NTFY_AWK_URL: ${{ secrets.NTFY_AWK_URL }}
+      HC_PING_URL: ${{ secrets.HC_PING_URL }}
     steps:
       - name: Check out code
         uses: actions/checkout@v4

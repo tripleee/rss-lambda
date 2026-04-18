@@ -1,3 +1,5 @@
+import os
+
 from aws_cdk import (
     aws_events as events,
     aws_lambda,
@@ -18,6 +20,11 @@ class LambdaCronStack(Stack):
             index="rss_lambda.py",
             handler="main",
             timeout=Duration.seconds(300),
+            environment={
+                "NTFY_PROCMAIL_URL": os.environ["NTFY_PROCMAIL_URL"],
+                "NTFY_AWK_URL": os.environ["NTFY_AWK_URL"],
+                "HC_PING_URL": os.environ["HC_PING_URL"],
+            },
         )
 
         # Run every five minutes
