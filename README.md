@@ -1,5 +1,7 @@
 # RSS-Lambda
 
+![healthchecks.io](https://healthchecks.io/badge/9e0619c1-f7c9-4531-a742-ed4fb4ac51eb/yWTMY20I-2.svg)
+
 This is a simple Python lambda function for AWS
 which scans an RSS feed and reports any new URLs
 to a separate endpoint on https://ntfy.sh/
