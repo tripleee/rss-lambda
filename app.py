@@ -28,7 +28,8 @@ class LambdaCronStack(Stack):
         )
 
         # Run every five minutes
-        # See https://docs.aws.amazon.com/lambda/latest/dg/tutorial-scheduled-events-schedule-expressions.html
+        # See https://docs.aws.amazon.com/lambda/latest/dg/
+        #     tutorial-scheduled-events-schedule-expressions.html
         rule = events.Rule(
             self, "Rule",
             schedule=events.Schedule.cron(
@@ -42,5 +43,5 @@ class LambdaCronStack(Stack):
 
 
 app = App()
-LambdaCronStack(app, "LambdaCronExample")
+LambdaCronStack(app, "RssNotifier")
 app.synth()
