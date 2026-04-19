@@ -18,10 +18,9 @@ jobs:
           fetch-depth: 2
 
       - name: Setup Node.js environment
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v4
         with:
           node-version: 18
-          cache: "npm"
 
       - name: Install AWS CDK and experimentaly Python lambda package
         run: npm i -g aws-cdk @aws-cdk/aws-lambda-python-alpha
@@ -31,7 +30,7 @@ jobs:
 
       - name: Install Python dependencies
         run: python -m pip install -r requirements.txt
-        
+
       - name: Configure aws credentials
         uses: aws-actions/configure-aws-credentials@master
         with:
